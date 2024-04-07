@@ -5,7 +5,20 @@ import ProfilePicture from './_components/profile-picture'
 type Props = {}
 
 const Settings = (props: Props) => {
-    //WIP: Wire up Profile Picture
+  const removeProfileImage = async () => {
+    'use server'
+    const response = await db.user.update({
+      where: {
+        clerkId: authUser.id,
+      },
+      data: {
+        profileImage: '',
+      },
+    })
+    return response
+  }
+
+
   return (
     <div className="flex flex-col gap-2">
       <h1 className="sticky top-0 z-[10] flex items-center justify-between border-b bg-background/50 p-6 text-3xl backdrop-blur-lg">
@@ -18,9 +31,12 @@ const Settings = (props: Props) => {
             Add or update your information
           </p>
         </div>
-        <ProfilePicture>
-          
-        </ProfilePicture>
+        {/* <ProfilePicture
+          onDelete={removeProfileImage}
+          userImage={user?.profileImage || ''}
+          onUpload={uploadProfileImage}
+        >
+        </ProfilePicture> */}
         <ProfileForm />
       </div>
     </div>
