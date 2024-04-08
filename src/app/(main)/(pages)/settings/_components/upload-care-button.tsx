@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useRef } from 'react'
+import * as LR from '@uploadcare/blocks'
 import { useRouter } from 'next/navigation'
-import * as LR from '@uploadcare/blocks';
 
 type Props = {
   onUpload: (e: string) => any
@@ -22,7 +22,7 @@ const UploadCareButton = ({ onUpload }: Props) => {
         router.refresh()
       }
     }
-    ctxProviderRef.current.addEventListener('file-upload-success', handleUpload)
+    ctxProviderRef.current?.addEventListener('file-upload-success', handleUpload)
   }, [])
 
   return (

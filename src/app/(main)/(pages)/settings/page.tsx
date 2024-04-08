@@ -1,10 +1,17 @@
 import ProfileForm from '@/components/forms/profile-form'
 import React from 'react'
 import ProfilePicture from './_components/profile-picture'
+import { currentUser } from '@clerk/nextjs'
+import { db } from '@/lib/db'
 
 type Props = {}
 
-const Settings = (props: Props) => {
+const Settings = async (props: Props) => {
+  const authUser = await currentUser();
+  if (!authUser) return null
+
+  const user = await db.user.findUnique({ where: { clerkId: authUser.id } })
+
   const removeProfileImage = async () => {
     'use server'
     const response = await db.user.update({
@@ -17,7 +24,35 @@ const Settings = (props: Props) => {
     })
     return response
   }
+  
+  const uploadProfileImage = async (image: string) => {
+    'use server'
+    const id = authUser.id
+    const response = await db.user.update({
+      where: {
+        clerkId: id,
+      },
+      data: {
+        profileImage: image,
+      },
+    })
 
+    return response
+  }
+
+  const updateUserInfo = async (name: string) => {
+    'use server'
+
+    const updateUser = await db.user.update({
+      where: {
+        clerkId: authUser.id,
+      },
+      data: {
+        name,
+      },
+    })
+    return updateUser
+  }
 
   return (
     <div className="flex flex-col gap-2">
@@ -31,13 +66,15 @@ const Settings = (props: Props) => {
             Add or update your information
           </p>
         </div>
-        {/* <ProfilePicture
+        <ProfilePicture
           onDelete={removeProfileImage}
           userImage={user?.profileImage || ''}
           onUpload={uploadProfileImage}
-        >
-        </ProfilePicture> */}
-        <ProfileForm />
+        />
+        <ProfileForm
+          user={user}
+          onUpdate={updateUserInfo}
+        />
       </div>
     </div>
   )
